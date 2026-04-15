@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>거현량 전문가 Pool | 대웅그룹</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+:root {
+  --bg:#f5f5f5; --surface:#ffffff; --border:#fde8c0;
+  --accent:#f97316; --accent-light:#fff7ed; --accent-mid:#fb923c; --accent-dark:#c2410c;
+  --text:#1a1a1a; --muted:#92714a; --tag:#fef3c7;
+  --danger:#c0392b; --blue:#3949ab; --orange:#f97316;
+  --shadow:0 2px 16px rgba(249,115,22,.12); --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── SCREEN: SPLASH ── */
+#splash{
+  display:flex;align-items:center;justify-content:center;min-height:100vh;
+  background:linear-gradient(145deg,#f97316 0%,#fb923c 40%,#fbbf24 80%,#fde68a 100%);
+}
+.splash-box{
+  background:rgba(255,255,255,.97);border-radius:24px;padding:52px 44px;
+  width:400px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.35);
+}
+.splash-logo{font-size:44px;margin-bottom:12px}
+.splash-title{font-size:22px;font-weight:700;color:#c2410c;margin-bottom:6px}
+.splash-sub{font-size:13px;color:var(--muted);margin-bottom:36px;line-height:1.6}
+.splash-input{
+  width:100%;padding:14px 16px;border:1.5px solid var(--border);
+  border-radius:10px;font-size:14px;font-family:inherit;margin-bottom:12px;
+  outline:none;transition:border-color .2s;
+}
+.splash-input:focus{border-color:var(--accent)}
+.splash-btn{
+  width:100%;padding:14px;background:var(--accent);color:#fff;border:none;
+  border-radius:10px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;
+  transition:background .2s;letter-spacing:.5px;
+}
+.splash-btn:hover{background:var(--accent-mid)}
+.splash-err{color:var(--danger);font-size:12px;margin-top:8px;display:none}
+
+/* ── APP ── */
+#app{display:none}
+.topbar{
+  background:linear-gradient(90deg,#f97316 0%,#fbbf24 100%);color:#fff;padding:0 32px;height:62px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(249,115,22,.3);
+}
+.topbar-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:10px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-user{font-size:12px;opacity:.8;background:rgba(255,255,255,.15);padding:4px 12px;border-radius:20px}
+.nav-tabs{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 32px}
+.nav-tab{
+  padding:14px 20px;font-size:14px;font-weight:500;color:var(--muted);
+  cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;
+  font-family:inherit;background:none;border-left:none;border-right:none;border-top:none;
+}
+.nav-tab.active{color:#f97316;border-bottom-color:#f97316}
+.container{max-width:1120px;margin:0 auto;padding:32px 24px}
+
+/* ── STATS ── */
+.stats-row{display:flex;gap:16px;margin-bottom:28px}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px 24px;flex:1;display:flex;align-items:center;gap:16px;
+}
+.stat-icon{font-size:28px}
+.stat-num{font-size:30px;font-weight:700;color:var(--accent);line-height:1}
+.stat-label{font-size:12px;color:var(--muted);margin-top:3px}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.search-box{
+  flex:1;min-width:220px;padding:10px 14px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:14px;font-family:inherit;background:var(--surface);
+  outline:none;transition:border-color .2s;
+}
+.search-box:focus{border-color:var(--accent)}
+.filter-sel{
+  padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;
+  font-size:13px;font-family:inherit;background:var(--surface);
+  outline:none;cursor:pointer;color:var(--text);
+}
+
+/* ── KEYWORD CHIPS ── */
+.kw-bar{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;
+  align-items:center;background:var(--surface);
+  border:1px solid var(--border);border-radius:10px;padding:12px 16px;
+}
+.kw-label{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap;margin-right:4px}
+.kw-chip{
+  padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;
+  border:1.5px solid var(--border);background:#fff;color:var(--muted);
+  cursor:pointer;font-family:inherit;transition:all .15s;
+}
+.kw-chip:hover{border-color:var(--accent);color:var(--accent)}
+.kw-chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.kw-chip.clr:hover{border-color:var(--danger);color:var(--danger)}
+
+/* ── BUTTONS ── */
+.btn{padding:10px 18px;border-radius:8px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-mid)}
+.btn-outline{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
+.btn-outline:hover{background:var(--accent-light)}
+.btn-ghost{background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.35)}
+.btn-ghost:hover{background:rgba(255,255,255,.25)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-danger{background:#fdf0ef;color:var(--danger);border:1px solid #f5c6c2}
+.btn-danger:hover{background:#fde8e6}
+
+/* ── CARDS ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:24px;transition:box-shadow .2s,transform .2s;cursor:pointer;
+}
+.card:hover{box-shadow:var(--shadow);transform:translateY(-2px)}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.card-avatar{
+  width:46px;height:46px;background:#fff7ed;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:700;color:#f97316;flex-shrink:0;
+}
+.card-company{font-size:15px;font-weight:700;margin-bottom:3px}
+.card-sub{font-size:12px;color:var(--muted)}
+.badge-new{
+  background:#e8f4fd;color:#1565c0;border:1px solid #bbdefb;
+  border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;flex-shrink:0;
+}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.tag{border-radius:20px;padding:3px 11px;font-size:11px;font-weight:500}
+.t-default{background:var(--tag);color:var(--muted)}
+.t-job{background:var(--accent-light);color:var(--accent-mid)}
+.t-kw{background:#fff3e0;color:var(--orange)}
+.t-comp{background:#e8eaf6;color:var(--blue)}
+.card-registrar{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}
+
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:580px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.25)}
+.modal-head{padding:24px 28px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1}
+.modal-title{font-size:17px;font-weight:700}
+.modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1}
+.modal-body{padding:24px 28px}
+.fg{margin-bottom:18px}
+.fl{font-size:13px;font-weight:600;margin-bottom:7px;display:block}
+.fl .req{color:var(--danger);margin-left:2px}
+.fi,.fs,.ft{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;background:#fff;color:var(--text)}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--accent)}
+.ft{resize:vertical;min-height:80px;line-height:1.6}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fhint{font-size:11px;color:var(--muted);margin-top:5px}
+.modal-foot{padding:16px 28px 24px;display:flex;gap:10px;justify-content:flex-end}
+
+/* ── DETAIL MODAL ── */
+.det-head{
+  display:flex;align-items:flex-start;gap:16px;
+  padding:24px 28px;border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg,#fff7ed,#fef9ee);border-radius:16px 16px 0 0;
+}
+.det-avatar{
+  width:54px;height:54px;background:linear-gradient(135deg,#f97316,#fbbf24);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.det-company{font-size:20px;font-weight:700;margin-bottom:4px}
+.det-meta{font-size:13px;color:var(--muted)}
+.det-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+
+.section-title{font-size:14px;font-weight:700;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.info-item{background:#fafaf8;border:1px solid var(--border);border-radius:8px;padding:14px}
+.info-item-label{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:5px}
+.info-item-val{font-size:14px;font-weight:500;color:var(--text);line-height:1.5}
+.info-full{grid-column:1/-1}
+
+.reg-box{
+  background:#f0f4ff;border:1px solid #c5cae9;border-radius:10px;
+  padding:14px 16px;display:flex;align-items:center;gap:12px;
+}
+.reg-avatar{
+  width:36px;height:36px;background:var(--blue);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.reg-name{font-size:14px;font-weight:700;color:var(--blue)}
+.reg-company{font-size:12px;color:#5c6bc0}
+
+/* ── TABLE ── */
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th{background:#fff7ed;padding:12px 14px;font-size:12px;font-weight:700;color:#f97316;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafaf8}
+.no-data{text-align:center;padding:60px;color:var(--muted);font-size:14px}
+
+/* ── MISC ── */
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-icon{font-size:44px;margin-bottom:14px}
+.empty-text{font-size:14px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  background:var(--accent-dark);color:#fff;padding:12px 24px;border-radius:30px;
+  font-size:14px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.toast.show{opacity:1}
+
+/* ── ADMIN ── */
+.admin-lock{
+  display:flex;align-items:center;justify-content:center;
+  min-height:60vh;flex-direction:column;gap:16px;
+}
+.admin-lock-box{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  padding:36px 40px;text-align:center;width:360px;
+}
+.admin-lock-icon{font-size:36px;margin-bottom:12px}
+.admin-lock-title{font-size:16px;font-weight:700;margin-bottom:6px}
+.admin-lock-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.nav-tab.admin-tab{color:#92714a;border-bottom-color:transparent}
+.nav-tab.admin-tab.active{color:#f97316;border-bottom-color:#f97316}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:28px}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px}
+.dash-card-title{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-label{font-size:12px;color:var(--text);min-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .4s}
+.bar-fill.blue{background:#3949ab}
+.bar-fill.orange{background:#e65100}
+.bar-count{font-size:12px;color:var(--muted);min-width:24px;text-align:right}
+.admin-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;overflow-x:auto;margin-top:20px}
+.admin-section{margin-bottom:28px}
+.admin-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.admin-section-title{font-size:15px;font-weight:700}
+
+/* ── ADMIN SUB TABS ── */
+.admin-sub-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.admin-sub-tab{
+  padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;
+  font-family:inherit;cursor:pointer;border:1.5px solid var(--border);
+  background:#fff;color:var(--muted);transition:all .2s;
+}
+.admin-sub-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.admin-sub-tab:hover:not(.active){border-color:var(--accent);color:var(--accent)}
+.admin-sub-content{display:none}
+.admin-sub-content.active{display:block}
+
+/* ── CHART ── */
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:20px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 22px}
+.chart-card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:6px}
+.chart-card.wide{grid-column:1/-1}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-label{font-size:12px;color:var(--text);min-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:10px;background:var(--border);border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#f97316,#fbbf24);transition:width .5s ease}
+.bar-fill.blue{background:linear-gradient(90deg,#3949ab,#7986cb)}
+.bar-fill.green{background:linear-gradient(90deg,#2d5a3d,#4a7c5f)}
+.bar-count{font-size:12px;font-weight:600;color:var(--muted);min-width:28px;text-align:right}
+
+/* ── USER MANAGE ── */
+.user-manage-toolbar{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.user-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.user-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:16px;display:flex;align-items:center;gap:12px;
+}
+.user-card-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,#f97316,#fbbf24);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.user-card-info{flex:1;min-width:0}
+.user-card-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.user-card-meta{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-card-del{background:none;border:none;color:#ddd;cursor:pointer;font-size:16px;flex-shrink:0;transition:color .2s;padding:4px}
+.user-card-del:hover{color:var(--danger)}
+</style>
+</head>
+<body>
+
+<!-- ══ SPLASH ══ -->
+<div id="splash">
+  <div class="splash-box">
+    <div class="splash-logo">🗂️</div>
+    <div class="splash-title">거현량 전문가 Pool</div>
+    <div class="splash-sub">대웅그룹 전 계열사 공유 플랫폼<br>회사·이름·사번을 입력하세요</div>
+    <select class="splash-input" id="loginCompany" style="cursor:pointer;color:#1a1a1a">
+      <option value="">소속 회사 선택</option>
+      <option>대웅/제약</option>
+      <option>한올바이오파마</option>
+      <option>대웅바이오</option>
+      <option>엠서클</option>
+      <option>대웅이엔지</option>
+      <option>대웅개발</option>
+      <option>이지메디컴</option>
+      <option>ids/UWO/페이지원</option>
+      <option>IDS/페이지원</option>
+      <option>대웅테라퓨틱스</option>
+      <option>대웅펫</option>
+      <option>디엔코스메틱스</option>
+      <option>시지그룹</option>
+      <option>아이엔테라퓨틱스</option>
+      <option>아피셀테라퓨틱스</option>
+    </select>
+    <input class="splash-input" id="loginName" placeholder="이름" maxlength="10">
+    <input class="splash-input" id="loginEmpno" placeholder="사번" maxlength="20"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="splash-btn" onclick="doLogin()">시작하기</button>
+    <div style="margin-top:16px;">
+      <button onclick="showAdminLogin()" style="
+        background:none;border:1.5px solid #f97316;color:#f97316;
+        border-radius:20px;padding:6px 18px;font-size:12px;font-weight:600;
+        font-family:inherit;cursor:pointer;transition:all .2s;
+      " onmouseover="this.style.background='#fff7ed'" onmouseout="this.style.background='none'">
+        🔐 관리자 로그인
+      </button>
+    </div>
+    <!-- 관리자 pw 입력 영역 (기본 숨김) -->
+    <div id="adminLoginBox" style="display:none;margin-top:16px;">
+      <input class="splash-input" type="password" id="adminPwSplash" placeholder="관리자 비밀번호"
+        style="margin-bottom:8px" onkeydown="if(event.key==='Enter')doAdminDirectLogin()">
+      <button class="splash-btn" onclick="doAdminDirectLogin()" style="background:linear-gradient(90deg,#f97316,#fbbf24)">확인</button>
+    </div>
+    <div class="splash-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-title">🗂️ 거현량 전문가 Pool</div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="topbarUser"></span>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">로그아웃</button>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('pool',this)">👥 Pool 전체보기</button>
+    <button class="nav-tab" onclick="switchTab('mine',this)">✏️ 내가 등록한 대상자</button>
+    <button class="nav-tab admin-tab" onclick="switchTab('admin',this)">🔐 관리자</button>
+  </div>
+  <div class="container">
+
+    <!-- TAB: POOL -->
+    <div class="tab-content active" id="tab-pool">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-icon">👥</div><div><div class="stat-num" id="stTotal">-</div><div class="stat-label">전체 등록 대상자</div></div></div>
+        <div class="stat-card"><div class="stat-icon">🏢</div><div><div class="stat-num" id="stCompanies">-</div><div class="stat-label">참여 회사</div></div></div>
+        <div class="stat-card"><div class="stat-icon">✍️</div><div><div class="stat-num" id="stRegistrars">-</div><div class="stat-label">등록 직책자</div></div></div>
+      </div>
+
+      <div class="toolbar">
+        <input class="search-box" type="text" id="mainSearch"
+          placeholder="🔍 회사·직책·직무·역량·아젠다 검색..." oninput="renderPool()">
+        <select class="filter-sel" id="fCompany" onchange="renderPool()"><option value="">전체 회사</option></select>
+        <button class="btn btn-primary" onclick="openAdd()">+ 거현량 등록</button>
+        <button class="btn btn-outline btn-sm" onclick="loadPool()">↻ 새로고침</button>
+      </div>
+
+      <div class="kw-bar" id="kwBar"><span class="kw-label">📌 키워드</span></div>
+      <div class="cards-grid" id="poolGrid"></div>
+    </div>
+
+    <!-- TAB: MINE -->
+    <div class="tab-content" id="tab-mine">
+      <div class="toolbar">
+        <input class="search-box" type="text" id="mineSearch"
+          placeholder="🔍 내가 등록한 대상자 검색..." oninput="renderMine()">
+        <button class="btn btn-primary" onclick="openAdd()">+ 거현량 등록</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>등록일</th><th>대상자 회사</th><th>직책</th><th>직무</th><th>역량</th><th>주요 아젠다</th><th>관리</th>
+          </tr></thead>
+          <tbody id="mineBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB: ADMIN -->
+    <div class="tab-content" id="tab-admin">
+      <div class="container" style="padding-top:0">
+        <div id="adminLock">
+          <div class="admin-lock">
+            <div class="admin-lock-box">
+              <div class="admin-lock-icon">🔐</div>
+              <div class="admin-lock-title">관리자 인증</div>
+              <div class="admin-lock-sub">관리자 비밀번호를 입력하세요</div>
+              <input class="fi" type="password" id="adminPwInput" placeholder="비밀번호"
+                style="margin-bottom:12px" onkeydown="if(event.key==='Enter')tryAdminLogin()">
+              <button class="btn btn-primary" style="width:100%" onclick="tryAdminLogin()">확인</button>
+              <div id="adminPwErr" style="color:var(--danger);font-size:12px;margin-top:8px;display:none">비밀번호가 올바르지 않습니다</div>
+            </div>
+          </div>
+        </div>
+        <div id="adminDash" style="display:none;padding-top:28px">
+
+          <!-- 요약 통계 -->
+          <div class="stats-row">
+            <div class="stat-card"><div class="stat-icon">🗂️</div><div><div class="stat-num" id="adTotal">-</div><div class="stat-label">전체 거현량 등록</div></div></div>
+            <div class="stat-card"><div class="stat-icon">🏢</div><div><div class="stat-num" id="adCompanies">-</div><div class="stat-label">참여 회사</div></div></div>
+            <div class="stat-card"><div class="stat-icon">✍️</div><div><div class="stat-num" id="adRegistrars">-</div><div class="stat-label">등록 직책자</div></div></div>
+            <div class="stat-card"><div class="stat-icon">📅</div><div><div class="stat-num" id="adThisMonth">-</div><div class="stat-label">이번 달 등록</div></div></div>
+          </div>
+
+          <!-- 서브탭 -->
+          <div class="admin-sub-tabs">
+            <button class="admin-sub-tab active" onclick="switchAdminTab('stats',this)">📊 통계 · 그래프</button>
+            <button class="admin-sub-tab" onclick="switchAdminTab('users',this)">👥 직책자 관리</button>
+            <button class="admin-sub-tab" onclick="switchAdminTab('data',this)">📋 전체 데이터</button>
+          </div>
+
+          <!-- ① 통계 · 그래프 -->
+          <div class="admin-sub-content active" id="adSub-stats">
+            <div class="chart-grid">
+              <div class="chart-card">
+                <div class="chart-card-title">🏢 회사별 거현량 등록 현황</div>
+                <div id="chartCompany"></div>
+              </div>
+              <div class="chart-card">
+                <div class="chart-card-title">✍️ 직책자별 활동 현황 Top 10</div>
+                <div id="chartRegistrar"></div>
+              </div>
+              <div class="chart-card">
+                <div class="chart-card-title">💼 직무별 Top 10</div>
+                <div id="chartJob"></div>
+              </div>
+              <div class="chart-card">
+                <div class="chart-card-title">🔖 키워드 Top 10</div>
+                <div id="chartKw"></div>
+              </div>
+              <div class="chart-card wide">
+                <div class="chart-card-title">📅 월별 등록 추이</div>
+                <div id="chartMonthly"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ② 직책자 관리 -->
+          <div class="admin-sub-content" id="adSub-users">
+            <div class="user-manage-toolbar">
+              <input class="search-box" type="text" id="userSearch" placeholder="🔍 이름·사번·회사 검색..."
+                style="max-width:280px" oninput="renderUserManage()">
+              <select class="filter-sel" id="userFilterCompany" onchange="renderUserManage()">
+                <option value="">전체 회사</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="openAddUser()">+ 직책자 추가</button>
+              <span id="userCount" style="font-size:12px;color:var(--muted);margin-left:4px"></span>
+            </div>
+            <div class="user-card-grid" id="userCardGrid"></div>
+          </div>
+
+          <!-- ③ 전체 데이터 -->
+          <div class="admin-sub-content" id="adSub-data">
+            <div class="admin-section-head">
+              <div></div>
+              <div style="display:flex;gap:8px">
+                <input class="search-box" type="text" id="adminSearch" placeholder="🔍 검색..."
+                  style="min-width:200px;flex:none" oninput="renderAdminTable()">
+                <button class="btn btn-outline btn-sm" onclick="exportCSV()">⬇ CSV 내보내기</button>
+              </div>
+            </div>
+            <div class="admin-table-wrap">
+              <table>
+                <thead><tr>
+                  <th>등록일</th><th>대상자 회사</th><th>직책</th><th>직무</th>
+                  <th>역량</th><th>주요 아젠다</th><th>키워드</th>
+                  <th>등록자</th><th>등록자 회사</th><th>삭제</th>
+                </tr></thead>
+                <tbody id="adminBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</div><!-- /app -->
+
+<!-- ══ MODAL: ADD ══ -->
+<div class="overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="addModalTitle">거현량 대상자 등록</div>
+      <button class="modal-close" onclick="closeModal('addModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--accent-light);border-radius:10px;padding:14px 16px;margin-bottom:20px;font-size:13px;color:var(--accent-dark);">
+        ✍️ 등록자: <strong id="addRegistrarLabel"></strong>
+      </div>
+
+      <div class="section-title" style="margin-bottom:14px">📋 거현량 정보</div>
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">대상자 회사 <span class="req">*</span></label>
+          <input class="fi" id="fTargetCompany" placeholder="예: 대웅제약 재무기획본부 / 외부기업명 등">
+        </div>
+        <div class="fg">
+          <label class="fl">직책 <span class="req">*</span></label>
+          <input class="fi" id="fPosition" placeholder="팀장, 본부장 등">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">직무 <span class="req">*</span></label>
+        <input class="fi" id="fJob" placeholder="예: HR기획, 재무관리, 영업전략 (쉼표 구분)">
+      </div>
+      <div class="fg">
+        <label class="fl">역량</label>
+        <input class="fi" id="fCompetency" placeholder="예: 조직관리, 전략수립, 커뮤니케이션 (쉼표 구분)">
+      </div>
+      <div class="fg">
+        <label class="fl">주요 아젠다</label>
+        <textarea class="ft" id="fAgenda" placeholder="이 분과 나눈 주요 주제나 인사이트를 자유롭게 기록하세요"></textarea>
+      </div>
+      <div class="fg">
+        <label class="fl">검색 키워드</label>
+        <input class="fi" id="fKeywords" placeholder="예: OKR, Workday, CDP, 성과관리 (쉼표 구분)">
+        <div class="fhint">키워드 칩으로 생성되어 빠른 검색에 활용됩니다</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('addModal')">취소</button>
+      <button class="btn btn-primary" id="addSaveBtn" onclick="saveRecord()">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: DETAIL ══ -->
+<div class="overlay" id="detModal">
+  <div class="modal" style="max-width:620px">
+    <div class="det-head" id="detHead"></div>
+    <div class="modal-body">
+      <div class="info-grid" id="detGrid"></div>
+      <div class="divider"></div>
+      <div class="section-title">✍️ 등록자</div>
+      <div class="reg-box" id="detReg"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger btn-sm" id="detDelBtn" onclick="deleteRecord()" style="display:none">삭제</button>
+      <button class="btn btn-outline" id="detEditBtn" onclick="editRecord()" style="display:none">수정</button>
+      <button class="btn btn-primary" onclick="closeModal('detModal')">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══ MODAL: ADD USER ══ -->
+<div class="overlay" id="addUserModal">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-head">
+      <div class="modal-title">직책자 추가</div>
+      <button class="modal-close" onclick="closeModal('addUserModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">이름 <span class="req">*</span></label>
+          <input class="fi" id="uName" placeholder="홍길동">
+        </div>
+        <div class="fg">
+          <label class="fl">사번 <span class="req">*</span></label>
+          <input class="fi" id="uEmpno" placeholder="2240001">
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">소속 회사 <span class="req">*</span></label>
+        <select class="fi" id="uCompany" style="cursor:pointer">
+          <option value="">회사 선택</option>
+          <option>대웅/제약</option><option>한올바이오파마</option><option>대웅바이오</option>
+          <option>엠서클</option><option>대웅이엔지</option><option>대웅개발</option>
+          <option>이지메디컴</option><option>ids/UWO/페이지원</option><option>IDS/페이지원</option>
+          <option>대웅테라퓨틱스</option><option>대웅펫</option><option>디엔코스메틱스</option>
+          <option>시지그룹</option><option>아이엔테라퓨틱스</option><option>아피셀테라퓨틱스</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('addUserModal')">취소</button>
+      <button class="btn btn-primary" onclick="saveUser()">추가</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════ CONFIG ══════════
+const SUPA_URL = 'https://sgwpdytsvbnpkdqflhlk.supabase.co';
+const SUPA_KEY = 'sb_publishable_CFBcRVjXakYL1N5YrqWJ-A_IOSo2YZo';
+const TABLE    = 'guhyeon_pool';
+
+// ══════════ STATE ══════════
+let user = null;      // { name, company }
+let records = [];     // all records from DB
+let editingId = null;
+let activeKw  = null;
+let currentId = null;
+
+// ══════════ USER DB (441명) ══════════
+const USER_DB = [{"company":"대웅/제약","empno":"1850935","name":"윤재춘"},{"company":"대웅/제약","empno":"1990250","name":"박성수"},{"company":"대웅/제약","empno":"2020320","name":"이창재"},{"company":"대웅/제약","empno":"2230296","name":"임규성"},{"company":"대웅/제약","empno":"2250249","name":"김우현"},{"company":"대웅/제약","empno":"2090339","name":"이승훈"},{"company":"대웅/제약","empno":"2500739","name":"윤덕상"},{"company":"대웅/제약","empno":"2220485","name":"탁효철"},{"company":"대웅/제약","empno":"2010050","name":"김범석"},{"company":"대웅/제약","empno":"2240208","name":"이지현"},{"company":"대웅/제약","empno":"2240054","name":"김광호"},{"company":"대웅/제약","empno":"2190057","name":"허병우"},{"company":"대웅/제약","empno":"2100269","name":"주언하"},{"company":"대웅/제약","empno":"2090341","name":"김승겸"},{"company":"대웅/제약","empno":"2250056","name":"정윤미"},{"company":"대웅/제약","empno":"2240155","name":"조은미"},{"company":"대웅/제약","empno":"2600765","name":"채양희"},{"company":"대웅/제약","empno":"2600325","name":"이정아"},{"company":"대웅/제약","empno":"2250121","name":"김정민"},{"company":"대웅/제약","empno":"2240570","name":"강정한"},{"company":"대웅/제약","empno":"2500502","name":"유숙종"},{"company":"대웅/제약","empno":"2250360","name":"이혜미"},{"company":"대웅/제약","empno":"2210306","name":"변웅준"},{"company":"대웅/제약","empno":"2100387","name":"이동원"},{"company":"대웅/제약","empno":"2250268","name":"안민정"},{"company":"대웅/제약","empno":"2220594","name":"심미진"},{"company":"대웅/제약","empno":"2230405","name":"고성재"},{"company":"대웅/제약","empno":"2250413","name":"공범서"},{"company":"대웅/제약","empno":"2230236","name":"유상훈"},{"company":"대웅/제약","empno":"2210465","name":"백지희"},{"company":"대웅/제약","empno":"2230203","name":"김보민"},{"company":"대웅/제약","empno":"2180309","name":"이소윤"},{"company":"대웅/제약","empno":"2220340","name":"이선미"},{"company":"대웅/제약","empno":"2220337","name":"도현종"},{"company":"대웅/제약","empno":"2180299","name":"김태헌"},{"company":"대웅/제약","empno":"2210177","name":"나재진"},{"company":"대웅/제약","empno":"2210467","name":"박형"},{"company":"대웅/제약","empno":"2170302","name":"김주현"},{"company":"대웅/제약","empno":"2210419","name":"조재민"},{"company":"대웅/제약","empno":"2120037","name":"김형준"},{"company":"대웅/제약","empno":"2180269","name":"박미희"},{"company":"대웅/제약","empno":"2250046","name":"양혜정"},{"company":"대웅/제약","empno":"2090356","name":"임청하"},{"company":"대웅/제약","empno":"2230003","name":"박정은"},{"company":"대웅/제약","empno":"2230498","name":"이아름"},{"company":"대웅/제약","empno":"2220244","name":"황은정"},{"company":"대웅/제약","empno":"2160159","name":"강희성"},{"company":"대웅/제약","empno":"2250104","name":"한아람"},{"company":"대웅/제약","empno":"2230421","name":"김준오"},{"company":"대웅/제약","empno":"2060068","name":"김경윤"},{"company":"대웅/제약","empno":"2100147","name":"진정은"},{"company":"대웅/제약","empno":"2100103","name":"전상희"},{"company":"대웅/제약","empno":"2240011","name":"유지민"},{"company":"대웅/제약","empno":"2060118","name":"박민선"},{"company":"대웅/제약","empno":"2140117","name":"장희정"},{"company":"대웅/제약","empno":"2170119","name":"배상우"},{"company":"대웅/제약","empno":"2240317","name":"백영석"},{"company":"대웅/제약","empno":"2600732","name":"김민성"},{"company":"대웅/제약","empno":"2010088","name":"박형철"},{"company":"대웅/제약","empno":"2060473","name":"박영준"},{"company":"대웅/제약","empno":"2100006","name":"강지은"},{"company":"대웅/제약","empno":"2110186","name":"장인석"},{"company":"대웅/제약","empno":"2070324","name":"서욱"},{"company":"대웅/제약","empno":"2050016","name":"김혁"},{"company":"대웅/제약","empno":"2090063","name":"진재훈"},{"company":"대웅/제약","empno":"2110378","name":"조태훈"},{"company":"대웅/제약","empno":"2160017","name":"윤재필"},{"company":"대웅/제약","empno":"2170326","name":"이장묵"},{"company":"대웅/제약","empno":"2040080","name":"이해민"},{"company":"대웅/제약","empno":"2090055","name":"이종환"},{"company":"대웅/제약","empno":"2220438","name":"이상곤"},{"company":"대웅/제약","empno":"2090240","name":"서지홍"},{"company":"대웅/제약","empno":"2220480","name":"조병하"},{"company":"대웅/제약","empno":"2200048","name":"오창헌"},{"company":"대웅/제약","empno":"2230472","name":"백정현"},{"company":"대웅/제약","empno":"2240020","name":"이대영"},{"company":"대웅/제약","empno":"2110121","name":"황득경"},{"company":"대웅/제약","empno":"2100010","name":"박은경"},{"company":"대웅/제약","empno":"2240186","name":"이상화"},{"company":"대웅/제약","empno":"2150048","name":"한세정"},{"company":"대웅/제약","empno":"2240195","name":"박혜미"},{"company":"대웅/제약","empno":"2200024","name":"김정한"},{"company":"대웅/제약","empno":"2190058","name":"김태헌"},{"company":"대웅/제약","empno":"1000026","name":"서성훈"},{"company":"대웅/제약","empno":"2030202","name":"김원기"},{"company":"대웅/제약","empno":"2110310","name":"이태훈"},{"company":"대웅/제약","empno":"2130231","name":"김용원"},{"company":"대웅/제약","empno":"1963378","name":"박준석"},{"company":"대웅/제약","empno":"2010010","name":"현해정"},{"company":"대웅/제약","empno":"2130200","name":"정재훈"},{"company":"대웅/제약","empno":"2170287","name":"김관영"},{"company":"대웅/제약","empno":"2160150","name":"김태헌"},{"company":"대웅/제약","empno":"2210302","name":"최종서"},{"company":"대웅/제약","empno":"2240013","name":"채아름"},{"company":"대웅/제약","empno":"2250320","name":"도현미"},{"company":"대웅/제약","empno":"2040004","name":"김지덕"},{"company":"대웅/제약","empno":"2220005","name":"배낙현"},{"company":"대웅/제약","empno":"2600575","name":"문성환"},{"company":"대웅/제약","empno":"2060023","name":"이경민"},{"company":"대웅/제약","empno":"2190086","name":"천경화"},{"company":"대웅/제약","empno":"2210178","name":"황온"},{"company":"대웅/제약","empno":"2210604","name":"문지현"},{"company":"대웅/제약","empno":"2220176","name":"양희진"},{"company":"대웅/제약","empno":"2070260","name":"박성우"},{"company":"대웅/제약","empno":"2100138","name":"조상은"},{"company":"대웅/제약","empno":"2180322","name":"이준환"},{"company":"대웅/제약","empno":"2190045","name":"유지선"},{"company":"대웅/제약","empno":"2210008","name":"황하나"},{"company":"대웅/제약","empno":"2210615","name":"신승우"},{"company":"대웅/제약","empno":"2220473","name":"신지현"},{"company":"대웅/제약","empno":"2250021","name":"손태경"},{"company":"대웅/제약","empno":"2060498","name":"양성은"},{"company":"대웅/제약","empno":"2080053","name":"박은경"},{"company":"대웅/제약","empno":"1911258","name":"박영호"},{"company":"대웅/제약","empno":"1932318","name":"백승범"},{"company":"대웅/제약","empno":"2160131","name":"조성원"},{"company":"대웅/제약","empno":"2250041","name":"이범석"},{"company":"대웅/제약","empno":"2160272","name":"이승하"},{"company":"대웅/제약","empno":"2230237","name":"한기성"},{"company":"대웅/제약","empno":"2120130","name":"홍성인"},{"company":"대웅/제약","empno":"2160315","name":"배치환"},{"company":"대웅/제약","empno":"2160523","name":"황정호"},{"company":"대웅/제약","empno":"2210202","name":"박석형"},{"company":"대웅/제약","empno":"2210501","name":"강충구"},{"company":"대웅/제약","empno":"2050307","name":"신민호"},{"company":"대웅/제약","empno":"2240369","name":"이태건"},{"company":"대웅/제약","empno":"2240334","name":"김차진"},{"company":"대웅/제약","empno":"2070032","name":"최승열"},{"company":"대웅/제약","empno":"2150146","name":"윤재영"},{"company":"대웅/제약","empno":"2210420","name":"이도겸"},{"company":"대웅/제약","empno":"2250040","name":"이전평"},{"company":"대웅/제약","empno":"2170065","name":"김성욱"},{"company":"대웅/제약","empno":"2170255","name":"강신일"},{"company":"대웅/제약","empno":"2190096","name":"한지수"},{"company":"대웅/제약","empno":"2190217","name":"김기성"},{"company":"대웅/제약","empno":"2200331","name":"이장석"},{"company":"대웅/제약","empno":"2210142","name":"임경희"},{"company":"대웅/제약","empno":"2210270","name":"전진호"},{"company":"대웅/제약","empno":"2220422","name":"김경운"},{"company":"대웅/제약","empno":"2110401","name":"함세형"},{"company":"대웅/제약","empno":"2210010","name":"김승우"},{"company":"대웅/제약","empno":"2160060","name":"손영은"},{"company":"대웅/제약","empno":"2220216","name":"이경미"},{"company":"대웅/제약","empno":"2240147","name":"윤준수"},{"company":"대웅/제약","empno":"2170028","name":"이학규"},{"company":"대웅/제약","empno":"2160156","name":"김상기"},{"company":"대웅/제약","empno":"2160270","name":"이창환"},{"company":"대웅/제약","empno":"2180183","name":"김진호"},{"company":"대웅/제약","empno":"2200006","name":"송종훈"},{"company":"대웅/제약","empno":"2020262","name":"최창진"},{"company":"대웅/제약","empno":"2160147","name":"장동혁"},{"company":"대웅/제약","empno":"2150137","name":"김경민"},{"company":"대웅/제약","empno":"2180223","name":"임원용"},{"company":"대웅/제약","empno":"2100343","name":"이태연"},{"company":"대웅/제약","empno":"2200088","name":"차준우"},{"company":"대웅/제약","empno":"2210196","name":"허완"},{"company":"대웅/제약","empno":"2500880","name":"나의민"},{"company":"대웅/제약","empno":"2060085","name":"임권조"},{"company":"대웅/제약","empno":"2230127","name":"양정현"},{"company":"대웅/제약","empno":"2500489","name":"홍승서"},{"company":"대웅/제약","empno":"2500771","name":"윤석현"},{"company":"대웅/제약","empno":"2500493","name":"정재준"},{"company":"한올바이오파마","empno":"223003","name":"박수진"},{"company":"한올바이오파마","empno":"207025","name":"박승국"},{"company":"한올바이오파마","empno":"210033","name":"안혜경"},{"company":"한올바이오파마","empno":"224014","name":"이은희"},{"company":"한올바이오파마","empno":"209051","name":"김영주"},{"company":"한올바이오파마","empno":"2230202","name":"정성재"},{"company":"한올바이오파마","empno":"200036","name":"최성진"},{"company":"한올바이오파마","empno":"222032","name":"문수연"},{"company":"한올바이오파마","empno":"221005","name":"윤병덕"},{"company":"한올바이오파마","empno":"215073","name":"박선미"},{"company":"한올바이오파마","empno":"225002","name":"김원기"},{"company":"한올바이오파마","empno":"200054","name":"손판석"},{"company":"한올바이오파마","empno":"221010","name":"최성욱"},{"company":"한올바이오파마","empno":"202077","name":"임범성"},{"company":"한올바이오파마","empno":"219000","name":"최원"},{"company":"한올바이오파마","empno":"216017","name":"방성웅"},{"company":"한올바이오파마","empno":"201010","name":"최규복"},{"company":"한올바이오파마","empno":"197036","name":"송영섭"},{"company":"한올바이오파마","empno":"197076","name":"김석호"},{"company":"한올바이오파마","empno":"203032","name":"정기영"},{"company":"한올바이오파마","empno":"215001","name":"김은진"},{"company":"한올바이오파마","empno":"2500593","name":"박성훈"},{"company":"한올바이오파마","empno":"2500729","name":"김정훈"},{"company":"한올바이오파마","empno":"194007","name":"도동선"},{"company":"한올바이오파마","empno":"196026","name":"박장섭"},{"company":"한올바이오파마","empno":"223004","name":"박수현"},{"company":"한올바이오파마","empno":"224008","name":"이연정"},{"company":"한올바이오파마","empno":"225010","name":"최두현"},{"company":"대웅바이오","empno":"3151002","name":"진성곤"},{"company":"대웅바이오","empno":"2500632","name":"김민"},{"company":"대웅바이오","empno":"3160702","name":"정윤미"},{"company":"대웅바이오","empno":"3180109","name":"유영기"},{"company":"대웅바이오","empno":"3200301","name":"편도규"},{"company":"대웅바이오","empno":"3230701","name":"이호진"},{"company":"대웅바이오","empno":"3231001","name":"이상민"},{"company":"대웅바이오","empno":"3230609","name":"김장호"},{"company":"대웅바이오","empno":"2500717","name":"최민석"},{"company":"대웅바이오","empno":"2500327","name":"박남진"},{"company":"대웅바이오","empno":"3200706","name":"김영민"},{"company":"대웅바이오","empno":"3160603","name":"박세호"},{"company":"대웅바이오","empno":"3160907","name":"이지현"},{"company":"대웅바이오","empno":"2250430","name":"손성원"},{"company":"대웅바이오","empno":"3120103","name":"박진우"},{"company":"대웅바이오","empno":"3220704","name":"이준석"},{"company":"대웅바이오","empno":"2500876","name":"이지훈"},{"company":"대웅바이오","empno":"3220509","name":"신재환"},{"company":"대웅바이오","empno":"3240505","name":"이우식"},{"company":"대웅바이오","empno":"3091001","name":"박상익"},{"company":"대웅바이오","empno":"3240608","name":"한희"},{"company":"대웅바이오","empno":"3241105","name":"김상필"},{"company":"대웅바이오","empno":"3210101","name":"김진수"},{"company":"대웅바이오","empno":"3080303","name":"박주남"},{"company":"대웅바이오","empno":"3181140","name":"이호명"},{"company":"대웅바이오","empno":"3250301","name":"윤종환"},{"company":"대웅바이오","empno":"3241002","name":"김윤철"},{"company":"대웅바이오","empno":"3240806","name":"이호연"},{"company":"대웅바이오","empno":"3200406","name":"손은희"},{"company":"대웅바이오","empno":"3191102","name":"정대웅"},{"company":"대웅바이오","empno":"3230407","name":"신익범"},{"company":"대웅바이오","empno":"3160716","name":"김광춘"},{"company":"대웅바이오","empno":"3250116","name":"박상호"},{"company":"대웅바이오","empno":"3891101","name":"이해정"},{"company":"대웅바이오","empno":"3080301","name":"김병구"},{"company":"대웅바이오","empno":"3070702","name":"김대광"},{"company":"대웅바이오","empno":"3080306","name":"이상호"},{"company":"대웅바이오","empno":"3031202","name":"강동훈"},{"company":"대웅바이오","empno":"3030401","name":"신인선"},{"company":"대웅바이오","empno":"2500721","name":"유민영"},{"company":"대웅바이오","empno":"3230505","name":"강의수"},{"company":"대웅바이오","empno":"3210304","name":"홍중연"},{"company":"대웅바이오","empno":"3200401","name":"고재호"},{"company":"대웅바이오","empno":"3160102","name":"이유경"},{"company":"대웅바이오","empno":"3240903","name":"한승희"},{"company":"대웅바이오","empno":"2160017","name":"윤재필"},{"company":"엠서클","empno":"01121","name":"이찬란"},{"company":"엠서클","empno":"01195","name":"김리원"},{"company":"엠서클","empno":"01346","name":"윤석민"},{"company":"엠서클","empno":"00984","name":"김영롱"},{"company":"엠서클","empno":"01478","name":"감호준"},{"company":"엠서클","empno":"01300","name":"정신영"},{"company":"엠서클","empno":"01590","name":"심연아"},{"company":"엠서클","empno":"2170153","name":"곽재용"},{"company":"엠서클","empno":"01397","name":"정상문"},{"company":"엠서클","empno":"2500426","name":"박유리"},{"company":"엠서클","empno":"2160073","name":"고경민"},{"company":"엠서클","empno":"2600897","name":"박주선"},{"company":"대웅이엔지","empno":"2600439","name":"서종원"},{"company":"대웅이엔지","empno":"1912338","name":"강대용"},{"company":"대웅이엔지","empno":"6050501","name":"김정배"},{"company":"대웅이엔지","empno":"6020903","name":"박창규"},{"company":"대웅이엔지","empno":"6210703","name":"김동찬"},{"company":"대웅이엔지","empno":"6130114","name":"오치광"},{"company":"대웅이엔지","empno":"1953423","name":"최정규"},{"company":"대웅이엔지","empno":"7231103","name":"고성민"},{"company":"대웅이엔지","empno":"7250503","name":"황정유"},{"company":"대웅이엔지","empno":"6230302","name":"김인호"},{"company":"대웅이엔지","empno":"6140502","name":"이대로"},{"company":"대웅이엔지","empno":"6140404","name":"전태진"},{"company":"대웅이엔지","empno":"2600958","name":"박대근"},{"company":"대웅이엔지","empno":"2600982","name":"이상현"},{"company":"대웅이엔지","empno":"6140501","name":"정의담"},{"company":"대웅개발","empno":"101564","name":"김윤주"},{"company":"대웅개발","empno":"101488","name":"문희탁"},{"company":"대웅개발","empno":"101462","name":"양옥주"},{"company":"대웅개발","empno":"101575","name":"신용운"},{"company":"대웅개발","empno":"100811","name":"김주리"},{"company":"대웅개발","empno":"101463","name":"윤경원"},{"company":"대웅개발","empno":"101472","name":"김재아"},{"company":"대웅개발","empno":"101503","name":"박서영"},{"company":"대웅개발","empno":"101515","name":"임인혁"},{"company":"대웅개발","empno":"101588","name":"조은경"},{"company":"대웅개발","empno":"2500811","name":"김성욱"},{"company":"대웅개발","empno":"2500610","name":"김은지"},{"company":"이지메디컴","empno":"EZ00031002","name":"진재희"},{"company":"이지메디컴","empno":"2500817","name":"박우진"},{"company":"이지메디컴","empno":"EZ12041275","name":"전기민"},{"company":"이지메디컴","empno":"EZ13061303","name":"이봉호"},{"company":"이지메디컴","empno":"EZ24070126","name":"홍인석"},{"company":"이지메디컴","empno":"2500637","name":"안재혁"},{"company":"이지메디컴","empno":"EZ17121810","name":"김민철"},{"company":"이지메디컴","empno":"EZ23010203","name":"홍승표"},{"company":"이지메디컴","empno":"2600840","name":"정유정"},{"company":"이지메디컴","empno":"EZ20012025","name":"박지강"},{"company":"이지메디컴","empno":"2600866","name":"임승욱"},{"company":"이지메디컴","empno":"2600970","name":"최희영"},{"company":"이지메디컴","empno":"2600845","name":"김가영"},{"company":"이지메디컴","empno":"EZ25051927","name":"김용희"},{"company":"이지메디컴","empno":"EZ21090141","name":"천정훈"},{"company":"이지메디컴","empno":"EZ19060115","name":"박세진"},{"company":"이지메디컴","empno":"EZ06031052","name":"김태웅"},{"company":"이지메디컴","empno":"2500505","name":"김정원"},{"company":"이지메디컴","empno":"EZ25041423","name":"이현승"},{"company":"이지메디컴","empno":"EZ24042222","name":"정덕교"},{"company":"이지메디컴","empno":"EZ17020010","name":"도경화"},{"company":"이지메디컴","empno":"EZ04051023","name":"반재상"},{"company":"이지메디컴","empno":"EZ24090932","name":"장의신"},{"company":"이지메디컴","empno":"EZ14011320","name":"김진만"},{"company":"이지메디컴","empno":"EZ17042626","name":"이병화"},{"company":"이지메디컴","empno":"2500805","name":"최치영"},{"company":"ids/UWO/페이지원","empno":"2017005","name":"성호경"},{"company":"ids/UWO/페이지원","empno":"2023022","name":"김석호"},{"company":"ids/UWO/페이지원","empno":"2025010","name":"김진휘"},{"company":"ids/UWO/페이지원","empno":"2022033","name":"서은상"},{"company":"ids/UWO/페이지원","empno":"2025006","name":"김희정"},{"company":"ids/UWO/페이지원","empno":"2500884","name":"김지훈"},{"company":"ids/UWO/페이지원","empno":"2500894","name":"변휘섭"},{"company":"ids/UWO/페이지원","empno":"2500896","name":"황원현"},{"company":"ids/UWO/페이지원","empno":"2500929","name":"박진호"},{"company":"ids/UWO/페이지원","empno":"2500885","name":"이기원"},{"company":"ids/UWO/페이지원","empno":"2500886","name":"한옥정"},{"company":"ids/UWO/페이지원","empno":"2500887","name":"박성호"},{"company":"ids/UWO/페이지원","empno":"2500888","name":"윤봉근"},{"company":"ids/UWO/페이지원","empno":"P0001","name":"김태훈"},{"company":"ids/UWO/페이지원","empno":"P0002","name":"배인준"},{"company":"ids/UWO/페이지원","empno":"-","name":"강복기"},{"company":"대웅테라퓨틱스","empno":"-","name":"김동환"},{"company":"대웅테라퓨틱스","empno":"-","name":"박상한"},{"company":"대웅테라퓨틱스","empno":"-","name":"이찬규"},{"company":"대웅테라퓨틱스","empno":"-","name":"최현주"},{"company":"대웅테라퓨틱스","empno":"-","name":"심지연"},{"company":"대웅테라퓨틱스","empno":"-","name":"방홍선"},{"company":"대웅테라퓨틱스","empno":"23100001","name":"최두원"},{"company":"대웅펫","empno":"jbmoon","name":"문재봉"},{"company":"디엔코스메틱스","empno":"2220594","name":"심미진"},{"company":"디엔코스메틱스","empno":"9000812","name":"이선재"},{"company":"디엔코스메틱스","empno":"9000672","name":"김영미"},{"company":"디엔코스메틱스","empno":"9000744","name":"정우창"},{"company":"디엔코스메틱스","empno":"2600700","name":"김용각"},{"company":"시지그룹","empno":"2090341","name":"김승겸"},{"company":"시지그룹","empno":"C121202","name":"성충환"},{"company":"시지그룹","empno":"C250102","name":"정효철"},{"company":"시지그룹","empno":"C141001","name":"목소윤"},{"company":"시지그룹","empno":"C141101","name":"양두진"},{"company":"시지그룹","empno":"C170704","name":"최홍식"},{"company":"시지그룹","empno":"C170201","name":"우선심"},{"company":"시지그룹","empno":"C200201","name":"권기숙"},{"company":"시지그룹","empno":"C171102","name":"윤선영"},{"company":"시지그룹","empno":"C140803","name":"원영훈"},{"company":"시지그룹","empno":"C210605","name":"김미진"},{"company":"시지그룹","empno":"C200803","name":"이나래"},{"company":"시지그룹","empno":"2250082","name":"황윤"},{"company":"시지그룹","empno":"2100269","name":"주언하"},{"company":"시지그룹","empno":"2250263","name":"이창환"},{"company":"시지그룹","empno":"2240582","name":"전원상"},{"company":"시지그룹","empno":"2250013","name":"유승환"},{"company":"시지그룹","empno":"C240704","name":"이성훈"},{"company":"시지그룹","empno":"C100606","name":"유현승"},{"company":"시지그룹","empno":"C210607","name":"김봉수"},{"company":"시지그룹","empno":"C240505","name":"김지민"},{"company":"시지그룹","empno":"C230501","name":"민선홍"},{"company":"시지그룹","empno":"C200809","name":"홍찬우"},{"company":"시지그룹","empno":"C200301","name":"유미영"},{"company":"시지그룹","empno":"C060902","name":"류주연"},{"company":"시지그룹","empno":"C220103","name":"이동환"},{"company":"시지그룹","empno":"C230201","name":"김인숙"},{"company":"시지그룹","empno":"C220602","name":"정종남"},{"company":"시지그룹","empno":"C160208","name":"이기완"},{"company":"시지그룹","empno":"C130703","name":"김성현"},{"company":"시지그룹","empno":"2600627","name":"박제민"},{"company":"시지그룹","empno":"C220810","name":"이성준"},{"company":"시지그룹","empno":"C230801","name":"이상철"},{"company":"시지그룹","empno":"C191102","name":"정현우"},{"company":"시지그룹","empno":"C221001","name":"김명현"},{"company":"시지그룹","empno":"2500592","name":"이병화"},{"company":"시지그룹","empno":"C190305","name":"최정욱"},{"company":"시지그룹","empno":"C250402","name":"권순길"},{"company":"시지그룹","empno":"C230207","name":"배효경"},{"company":"시지그룹","empno":"C240803","name":"김명준"},{"company":"시지그룹","empno":"2500441","name":"심훈"},{"company":"시지그룹","empno":"C240301","name":"이광희"},{"company":"시지그룹","empno":"C240802","name":"황혜령"},{"company":"시지그룹","empno":"C190302","name":"이동기"},{"company":"시지그룹","empno":"C220403","name":"김승미"},{"company":"시지그룹","empno":"C170809","name":"김백현"},{"company":"시지그룹","empno":"C220507","name":"김종근"},{"company":"시지그룹","empno":"C210301","name":"김선미"},{"company":"시지그룹","empno":"C100602","name":"하대희"},{"company":"시지그룹","empno":"C101006","name":"현규창"},{"company":"시지그룹","empno":"C130803","name":"정민선"},{"company":"시지그룹","empno":"C240105","name":"정진홍"},{"company":"시지그룹","empno":"C210202","name":"이주현"},{"company":"시지그룹","empno":"C240401","name":"정진용"},{"company":"시지그룹","empno":"C220801","name":"백장현"},{"company":"시지그룹","empno":"9900768","name":"김정희"},{"company":"시지그룹","empno":"2500354","name":"양효정"},{"company":"시지그룹","empno":"9900734","name":"김진희"},{"company":"시지그룹","empno":"9000431","name":"박천"},{"company":"시지그룹","empno":"9000351","name":"하성환"},{"company":"시지그룹","empno":"2500915","name":"김지원"},{"company":"시지그룹","empno":"9000597","name":"유재준"},{"company":"시지그룹","empno":"2500883","name":"박순효"},{"company":"시지그룹","empno":"CGM00833","name":"백태운"},{"company":"시지그룹","empno":"CGM00241","name":"황성철"},{"company":"시지그룹","empno":"C130903","name":"조명래"},{"company":"시지그룹","empno":"C230413","name":"박진감"},{"company":"시지그룹","empno":"CGM00232","name":"유태욱"},{"company":"시지그룹","empno":"CGM00624","name":"김재홍"},{"company":"시지그룹","empno":"CGM00202","name":"오규석"},{"company":"시지그룹","empno":"CGM00434","name":"박선희"},{"company":"시지그룹","empno":"CGM00386","name":"권경제"},{"company":"시지그룹","empno":"2600463","name":"신호철"},{"company":"시지그룹","empno":"CGM00563","name":"정화철"},{"company":"시지그룹","empno":"CGM00802","name":"장진호"},{"company":"시지그룹","empno":"C210801","name":"송동률"},{"company":"시지그룹","empno":"M24041","name":"김기영"},{"company":"시지그룹","empno":"M25071","name":"김재동"},{"company":"시지그룹","empno":"C240210","name":"남준희"},{"company":"시지그룹","empno":"Q250302","name":"김종우"},{"company":"시지그룹","empno":"Q241001","name":"이민희"},{"company":"시지그룹","empno":"2500517","name":"김진효"},{"company":"시지그룹","empno":"CGM00836","name":"정근수"},{"company":"시지그룹","empno":"2501077","name":"설재률"},{"company":"시지그룹","empno":"C240509","name":"조용현"},{"company":"아이엔테라퓨틱스","empno":"I2020107","name":"박종덕"},{"company":"아이엔테라퓨틱스","empno":"I2022014","name":"김아름"},{"company":"아이엔테라퓨틱스","empno":"I2022015","name":"신예슬"},{"company":"아이엔테라퓨틱스","empno":"A2020004","name":"윤화인"},{"company":"아피셀테라퓨틱스","empno":"A2021003","name":"강송화"},{"company":"아피셀테라퓨틱스","empno":"I2021117","name":"권미화"},{"company":"아이엔테라퓨틱스","empno":"I2021119","name":"김동우"},{"company":"아이엔테라퓨틱스","empno":"I2022004","name":"이승범"},{"company":"아이엔테라퓨틱스","empno":"I2020103","name":"김웅빈"},{"company":"아이엔테라퓨틱스","empno":"I2024003","name":"차관익"},{"company":"아이엔테라퓨틱스","empno":"I2024001","name":"김혜윤"},{"company":"아이엔테라퓨틱스","empno":"I2022017","name":"김영민"},{"company":"아피셀테라퓨틱스","empno":"A2025001","name":"이지훈"},{"company":"아피셀테라퓨틱스","empno":"A2025002","name":"박세영"},{"company":"아피셀테라퓨틱스","empno":"A2021001","name":"안경훈"},{"company":"아피셀테라퓨틱스","empno":"A2026001","name":"조진구"}];
+
+// ══════════ AUTH ══════════
+function doLogin() {
+  const company = document.getElementById('loginCompany').value.trim();
+  const name    = document.getElementById('loginName').value.trim();
+  const empno   = document.getElementById('loginEmpno').value.trim();
+  const errEl   = document.getElementById('loginErr');
+
+  if (!company || !name || !empno) {
+    errEl.textContent = '회사, 이름, 사번을 모두 입력해주세요';
+    errEl.style.display = 'block'; return;
+  }
+
+  // 회사+사번+이름 3개 모두 대조 검증
+  const matched = USER_DB.find(u =>
+    u.empno.trim()   === empno.trim() &&
+    u.name.trim()    === name.trim()  &&
+    u.company.trim() === company.trim()
+  );
+
+  if (!matched) {
+    errEl.textContent = '회사·이름·사번이 일치하지 않습니다. 다시 확인해주세요.';
+    errEl.style.display = 'block'; return;
+  }
+
+  errEl.style.display = 'none';
+  user = { name: matched.name, company: matched.company, empno: matched.empno };
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('topbarUser').textContent = `${matched.name} · ${matched.company}`;
+  document.getElementById('addRegistrarLabel').textContent = `${matched.name} (${matched.company})`;
+  loadPool();
+}
+function doLogout() {
+  user = null; records = [];
+  document.getElementById('splash').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginName').value = '';
+  document.getElementById('loginCompany').value = '';
+  document.getElementById('loginEmpno').value = '';
+  document.getElementById('loginErr').style.display = 'none';
+  adminUnlocked = false;
+}
+// (엔터키는 loginEmpno input에 inline으로 처리)
+
+// ══════════ API ══════════
+async function api(method, path, body) {
+  const headers = {
+    'apikey': SUPA_KEY,
+    'Authorization': `Bearer ${SUPA_KEY}`,
+    'Content-Type': 'application/json',
+  };
+  if (method === 'POST')  headers['Prefer'] = 'return=minimal';
+  if (method === 'PATCH') headers['Prefer'] = 'return=minimal';
+
+  const res = await fetch(`${SUPA_URL}/rest/v1/${path}`, {
+    method, headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  if (method === 'DELETE' || method === 'POST' || method === 'PATCH') return null;
+  return res.json().catch(() => null);
+}
+
+async function loadPool() {
+  showLoading();
+  try {
+    records = await api('GET', `${TABLE}?order=created_at.desc&select=*`);
+    renderStats();
+    renderFilters();
+    renderKwChips();
+    renderPool();
+    renderMine();
+  } catch(e) {
+    showToast('데이터 로드 실패: ' + e.message, true);
+  }
+}
+
+// ══════════ LOADING ══════════
+function showLoading() {
+  document.getElementById('poolGrid').innerHTML =
+    `<div class="loading" style="grid-column:1/-1"><span class="spinner"></span>불러오는 중...</div>`;
+}
+
+// ══════════ STATS ══════════
+function renderStats() {
+  const companies  = new Set(records.map(r => r.target_company).filter(Boolean));
+  const registrars = new Set(records.map(r => r.registrar_name).filter(Boolean));
+  document.getElementById('stTotal').textContent      = records.length;
+  document.getElementById('stCompanies').textContent  = companies.size;
+  document.getElementById('stRegistrars').textContent = registrars.size;
+}
+
+// ══════════ FILTERS ══════════
+function renderFilters() {
+  const companies = [...new Set(records.map(r => r.target_company).filter(Boolean))].sort();
+  const fc = document.getElementById('fCompany');
+  const cv = fc.value;
+  fc.innerHTML = '<option value="">전체 회사</option>' +
+    companies.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  fc.value = companies.includes(cv) ? cv : '';
+}
+
+// ══════════ KEYWORD CHIPS ══════════
+function getAllKws() {
+  const set = new Set();
+  records.forEach(r => {
+    splitTrim(r.keywords).forEach(k => set.add(k));
+    splitTrim(r.target_job).forEach(k => set.add(k));
+    splitTrim(r.competency).forEach(k => set.add(k));
+  });
+  return [...set].sort();
+}
+function renderKwChips() {
+  const bar = document.getElementById('kwBar');
+  const kws = getAllKws();
+  bar.innerHTML = `<span class="kw-label">📌 키워드</span>`;
+  if (!kws.length) {
+    bar.innerHTML += `<span style="font-size:12px;color:var(--muted)">등록 후 자동 생성</span>`;
+    return;
+  }
+  kws.forEach(kw => {
+    const b = document.createElement('button');
+    b.className = 'kw-chip' + (activeKw === kw ? ' on' : '');
+    b.textContent = kw;
+    b.onclick = () => { activeKw = activeKw === kw ? null : kw; renderKwChips(); renderPool(); };
+    bar.appendChild(b);
+  });
+  if (activeKw) {
+    const c = document.createElement('button');
+    c.className = 'kw-chip clr'; c.textContent = '✕ 초기화';
+    c.onclick = () => { activeKw = null; renderKwChips(); renderPool(); };
+    bar.appendChild(c);
+  }
+}
+
+// ══════════ POOL GRID ══════════
+function renderPool() {
+  const q   = (document.getElementById('mainSearch').value || '').toLowerCase();
+  const fc  = document.getElementById('fCompany').value;
+
+  const filtered = records.filter(r => {
+    const hay = [r.target_company, r.target_position, r.target_job,
+                 r.competency, r.agenda, r.keywords,
+                 r.registrar_name, r.registrar_company].join(' ').toLowerCase();
+    const mQ  = !q      || hay.includes(q);
+    const mC  = !fc     || r.target_company === fc;
+    const mKw = !activeKw || (
+      splitTrim(r.keywords).includes(activeKw) ||
+      splitTrim(r.target_job).includes(activeKw) ||
+      splitTrim(r.competency).includes(activeKw)
+    );
+    return mQ && mC && mKw;
+  });
+
+  const grid = document.getElementById('poolGrid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
+      <div class="empty-icon">🌱</div>
+      <div class="empty-text">조건에 맞는 대상자가 없습니다</div></div>`;
+    return;
+  }
+
+  const now = Date.now();
+  grid.innerHTML = filtered.map(r => {
+    const isNew   = now - new Date(r.created_at).getTime() < 86400000 * 3;
+    const jobs    = splitTrim(r.target_job);
+    const comps   = splitTrim(r.competency);
+    const kws     = splitTrim(r.keywords);
+    const initial = (r.target_company || '?').slice(0, 1);
+    const isMine  = r.registrar_name === user?.name && r.registrar_company === user?.company;
+
+    return `
+    <div class="card" onclick="openDetail('${r.id}')">
+      <div class="card-head">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="card-avatar">${esc(initial)}</div>
+          <div>
+            <div class="card-company">${esc(r.target_company || '-')}</div>
+            <div class="card-sub">${esc(r.target_position || '-')}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:5px;flex-direction:column;align-items:flex-end">
+          ${isNew ? '<span class="badge-new">NEW</span>' : ''}
+          ${isMine ? '<span style="font-size:10px;color:var(--muted)">내가 등록</span>' : ''}
+        </div>
+      </div>
+      <div class="tags">
+        ${jobs.map(j => `<span class="tag t-job">${esc(j)}</span>`).join('')}
+        ${comps.map(c => `<span class="tag t-default">${esc(c)}</span>`).join('')}
+        ${kws.map(k => `<span class="tag t-kw">${esc(k)}</span>`).join('')}
+      </div>
+      ${r.agenda ? `<div style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(r.agenda)}</div>` : ''}
+      <div class="card-registrar">
+        ✍️ ${esc(r.registrar_name)} · ${esc(r.registrar_company)} · ${fmtDate(r.created_at)}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════ MINE TABLE ══════════
+function renderMine() {
+  const q = (document.getElementById('mineSearch').value || '').toLowerCase();
+  const mine = records.filter(r =>
+    r.registrar_name === user?.name &&
+    r.registrar_company === user?.company &&
+    (!q || [r.target_company, r.target_position, r.target_job, r.competency, r.agenda, r.keywords].join(' ').toLowerCase().includes(q))
+  );
+  const tbody = document.getElementById('mineBody');
+  if (!mine.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="no-data">아직 등록한 대상자가 없습니다<br><small style="color:var(--muted);margin-top:4px;display:block">상단 "+ 거현량 등록" 버튼으로 추가해보세요</small></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = mine.map(r => `
+    <tr>
+      <td style="white-space:nowrap;color:var(--muted)">${fmtDate(r.created_at)}</td>
+      <td style="font-weight:600">${esc(r.target_company || '-')}</td>
+      <td>${esc(r.target_position || '-')}</td>
+      <td>${splitTrim(r.target_job).map(j => `<span class="tag t-job" style="margin:2px">${esc(j)}</span>`).join('')}</td>
+      <td style="font-size:12px;color:var(--muted)">${splitTrim(r.competency).join(', ') || '-'}</td>
+      <td style="font-size:12px;max-width:200px;color:var(--muted)">${esc(r.agenda || '-').slice(0,60)}${(r.agenda||'').length>60?'…':''}</td>
+      <td>
+        <button class="btn btn-sm btn-outline" style="margin-right:4px" onclick="event.stopPropagation();openDetail('${r.id}')">보기</button>
+        <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();confirmDelete('${r.id}')">삭제</button>
+      </td>
+    </tr>`).join('');
+}
+
+// ══════════ DETAIL ══════════
+function openDetail(id) {
+  currentId = id;
+  const r = records.find(x => x.id === id);
+  if (!r) return;
+  const isMine = r.registrar_name === user?.name && r.registrar_company === user?.company;
+
+  document.getElementById('detHead').innerHTML = `
+    <div class="det-avatar">${esc((r.target_company||'?').slice(0,1))}</div>
+    <div style="flex:1">
+      <div class="det-company">${esc(r.target_company || '-')}</div>
+      <div class="det-meta">${esc(r.target_position || '-')}</div>
+      <div class="det-tags">
+        ${splitTrim(r.target_job).map(j => `<span class="tag t-job">${esc(j)}</span>`).join('')}
+        ${splitTrim(r.competency).map(c => `<span class="tag t-default">${esc(c)}</span>`).join('')}
+        ${splitTrim(r.keywords).map(k => `<span class="tag t-kw">${esc(k)}</span>`).join('')}
+      </div>
+    </div>`;
+
+  document.getElementById('detGrid').innerHTML = `
+    <div class="info-item">
+      <div class="info-item-label">직무</div>
+      <div class="info-item-val">${splitTrim(r.target_job).join(', ') || '-'}</div>
+    </div>
+    <div class="info-item">
+      <div class="info-item-label">역량</div>
+      <div class="info-item-val">${splitTrim(r.competency).join(', ') || '-'}</div>
+    </div>
+    <div class="info-item info-full">
+      <div class="info-item-label">주요 아젠다</div>
+      <div class="info-item-val" style="line-height:1.7">${esc(r.agenda || '-')}</div>
+    </div>
+    <div class="info-item">
+      <div class="info-item-label">검색 키워드</div>
+      <div class="info-item-val">${splitTrim(r.keywords).join(', ') || '-'}</div>
+    </div>
+    <div class="info-item">
+      <div class="info-item-label">등록일</div>
+      <div class="info-item-val">${fmtDate(r.created_at)}</div>
+    </div>`;
+
+  document.getElementById('detReg').innerHTML = `
+    <div class="reg-avatar">${esc((r.registrar_name||'?').slice(0,1))}</div>
+    <div>
+      <div class="reg-name">${esc(r.registrar_name || '-')}</div>
+      <div class="reg-company">${esc(r.registrar_company || '-')}</div>
+    </div>`;
+
+  document.getElementById('detDelBtn').style.display  = isMine ? 'inline-flex' : 'none';
+  document.getElementById('detEditBtn').style.display = isMine ? 'inline-flex' : 'none';
+  document.getElementById('detModal').classList.add('open');
+}
+
+// ══════════ ADD / EDIT ══════════
+function openAdd() {
+  editingId = null;
+  document.getElementById('addModalTitle').textContent = '거현량 대상자 등록';
+  document.getElementById('addSaveBtn').textContent    = '등록';
+  ['fTargetCompany','fPosition','fJob','fCompetency','fAgenda','fKeywords']
+    .forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('addModal').classList.add('open');
+}
+function editRecord() {
+  const r = records.find(x => x.id === currentId);
+  if (!r) return;
+  editingId = r.id;
+  document.getElementById('addModalTitle').textContent = '대상자 정보 수정';
+  document.getElementById('addSaveBtn').textContent    = '저장';
+  document.getElementById('fTargetCompany').value = r.target_company  || '';
+  document.getElementById('fPosition').value      = r.target_position || '';
+  document.getElementById('fJob').value           = r.target_job      || '';
+  document.getElementById('fCompetency').value    = r.competency      || '';
+  document.getElementById('fAgenda').value        = r.agenda          || '';
+  document.getElementById('fKeywords').value      = r.keywords        || '';
+  closeModal('detModal');
+  document.getElementById('addModal').classList.add('open');
+}
+
+async function saveRecord() {
+  const tc = document.getElementById('fTargetCompany').value.trim();
+  const tp = document.getElementById('fPosition').value.trim();
+  const tj = document.getElementById('fJob').value.trim();
+  if (!tc || !tp || !tj) { showToast('회사, 직책, 직무는 필수입니다', true); return; }
+
+  const btn = document.getElementById('addSaveBtn');
+  btn.disabled = true; btn.textContent = '저장 중...';
+
+  const payload = {
+    target_company:   tc,
+    target_position:  tp,
+    target_job:       tj,
+    competency:       document.getElementById('fCompetency').value.trim(),
+    agenda:           document.getElementById('fAgenda').value.trim(),
+    keywords:         document.getElementById('fKeywords').value.trim(),
+    registrar_name:   user.name,
+    registrar_company:user.company,
+  };
+
+  try {
+    if (editingId) {
+      await api('PATCH', `${TABLE}?id=eq.${editingId}`, payload);
+      showToast('수정 완료!');
+    } else {
+      await api('POST', TABLE, payload);
+      showToast('등록 완료!');
+    }
+    closeModal('addModal');
+    await loadPool();
+  } catch(e) {
+    showToast('저장 실패: ' + e.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = editingId ? '저장' : '등록';
+  }
+}
+
+// ══════════ DELETE ══════════
+function deleteRecord() { confirmDelete(currentId); }
+async function confirmDelete(id) {
+  if (!confirm('이 대상자를 삭제할까요?')) return;
+  try {
+    await api('DELETE', `${TABLE}?id=eq.${id}`);
+    closeModal('detModal');
+    showToast('삭제 완료');
+    await loadPool();
+  } catch(e) {
+    showToast('삭제 실패: ' + e.message, true);
+  }
+}
+
+// ══════════ TAB ══════════
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'mine')  renderMine();
+  if (tab === 'admin') renderAdminIfUnlocked();
+}
+
+// ══════════ ADMIN AUTH ══════════
+const ADMIN_PW = 'dw2026#';
+let adminUnlocked = false;
+
+function showAdminLogin() {
+  const box = document.getElementById('adminLoginBox');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  if (box.style.display === 'block') document.getElementById('adminPwSplash').focus();
+}
+
+function doAdminDirectLogin() {
+  const pw = document.getElementById('adminPwSplash').value.trim();
+  if (!pw) return;
+  if (pw !== ADMIN_PW) {
+    const err = document.getElementById('loginErr');
+    err.textContent = '관리자 비밀번호가 올바르지 않습니다.';
+    err.style.display = 'block';
+    document.getElementById('adminPwSplash').value = '';
+    return;
+  }
+  document.getElementById('loginErr').style.display = 'none';
+  user = { name: '관리자', company: 'Admin', empno: 'admin' };
+  adminUnlocked = true;
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('topbarUser').textContent = '🔐 관리자';
+  document.getElementById('addRegistrarLabel').textContent = '관리자';
+  loadPool();
+  setTimeout(() => {
+    const adminTab = document.querySelector('.nav-tab.admin-tab');
+    if (adminTab) switchTab('admin', adminTab);
+  }, 800);
+}
+
+function tryAdminLogin() {
+  const v = document.getElementById('adminPwInput').value;
+  if (v === ADMIN_PW) {
+    adminUnlocked = true;
+    document.getElementById('adminLock').style.display = 'none';
+    document.getElementById('adminDash').style.display = 'block';
+    document.getElementById('adminPwInput').value = '';
+    renderAdminDash();
+  } else {
+    document.getElementById('adminPwErr').style.display = 'block';
+  }
+}
+function renderAdminIfUnlocked() {
+  if (adminUnlocked) {
+    document.getElementById('adminLock').style.display = 'none';
+    document.getElementById('adminDash').style.display = 'block';
+    renderAdminDash();
+  }
+}
+
+// ══════════ ADMIN SUB TAB ══════════
+function switchAdminTab(tab, btn) {
+  document.querySelectorAll('.admin-sub-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-sub-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('adSub-' + tab).classList.add('active');
+  if (tab === 'users') renderUserManage();
+  if (tab === 'data')  renderAdminTable();
+}
+
+// ══════════ ADMIN DASHBOARD ══════════
+function renderAdminDash() {
+  const now = new Date();
+  const thisMonth = records.filter(r => {
+    const d = new Date(r.created_at);
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  }).length;
+  const companies  = new Set(records.map(r => r.registrar_company).filter(Boolean));
+  const registrars = new Set(records.map(r => r.registrar_name + '|' + r.registrar_company).filter(Boolean));
+  document.getElementById('adTotal').textContent      = records.length;
+  document.getElementById('adCompanies').textContent  = companies.size;
+  document.getElementById('adRegistrars').textContent = registrars.size;
+  document.getElementById('adThisMonth').textContent  = thisMonth;
+
+  renderBarChart('chartCompany',   countBy(records, r => r.registrar_company), 'accent');
+  renderBarChart('chartRegistrar', countBy(records, r => `${r.registrar_name} (${r.registrar_company})`), 'blue');
+  renderBarChart('chartJob',       countByTokens(records, r => r.target_job), 'accent');
+  renderBarChart('chartKw',        countByTokens(records, r => r.keywords), 'blue');
+  renderMonthlyChart();
+  renderUserCompanyFilter();
+  renderAdminTable();
+}
+
+function countBy(arr, fn, top=10) {
+  const m = {};
+  arr.forEach(r => { const k = fn(r); if (k) m[k] = (m[k]||0)+1; });
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,top);
+}
+function countByTokens(arr, fn, top=10) {
+  const m = {};
+  arr.forEach(r => splitTrim(fn(r)).forEach(k => { if(k) m[k]=(m[k]||0)+1; }));
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,top);
+}
+
+function renderBarChart(elId, data, color='accent') {
+  const el = document.getElementById(elId);
+  if (!data.length) { el.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px 0">데이터 없음</div>`; return; }
+  const max = data[0][1];
+  el.innerHTML = data.map(([label, cnt]) => `
+    <div class="bar-row">
+      <div class="bar-label" title="${esc(label)}">${esc(label)}</div>
+      <div class="bar-track"><div class="bar-fill ${color==='blue'?'blue':''}" style="width:${Math.round(cnt/max*100)}%"></div></div>
+      <div class="bar-count">${cnt}</div>
+    </div>`).join('');
+}
+
+function renderMonthlyChart() {
+  const el = document.getElementById('chartMonthly');
+  const m = {};
+  records.forEach(r => {
+    if (!r.created_at) return;
+    const d = new Date(r.created_at);
+    const key = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}`;
+    m[key] = (m[key]||0)+1;
+  });
+  const sorted = Object.entries(m).sort((a,b)=>a[0].localeCompare(b[0]));
+  if (!sorted.length) { el.innerHTML = `<div style="font-size:12px;color:var(--muted)">데이터 없음</div>`; return; }
+  const max = Math.max(...sorted.map(([,v])=>v));
+  el.innerHTML = `
+    <div style="display:flex;align-items:flex-end;gap:8px;height:120px;padding-bottom:24px;position:relative">
+      ${sorted.map(([label, cnt]) => `
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0">
+          <div style="font-size:11px;font-weight:700;color:var(--muted)">${cnt}</div>
+          <div style="width:100%;background:linear-gradient(180deg,#f97316,#fbbf24);border-radius:4px 4px 0 0;height:${Math.round(cnt/max*80)}px;min-height:4px;transition:height .4s"></div>
+          <div style="font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-align:center">${label}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ══════════ USER MANAGE ══════════
+// USER_DB를 로컬 편집 가능하도록 복사본 사용
+let userDB = [...USER_DB];
+
+function renderUserCompanyFilter() {
+  const companies = [...new Set(userDB.map(u => u.company).filter(Boolean))].sort();
+  const sel = document.getElementById('userFilterCompany');
+  const cv = sel.value;
+  sel.innerHTML = '<option value="">전체 회사</option>' +
+    companies.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  sel.value = companies.includes(cv) ? cv : '';
+}
+
+function renderUserManage() {
+  const q  = (document.getElementById('userSearch').value || '').toLowerCase();
+  const fc = document.getElementById('userFilterCompany').value;
+  const filtered = userDB.filter(u => {
+    const hay = [u.name, u.empno, u.company].join(' ').toLowerCase();
+    return (!q || hay.includes(q)) && (!fc || u.company === fc);
+  });
+  document.getElementById('userCount').textContent = `${filtered.length}명`;
+  const grid = document.getElementById('userCardGrid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">👤</div><div class="empty-text">조건에 맞는 직책자가 없습니다</div></div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map((u, i) => `
+    <div class="user-card">
+      <div class="user-card-avatar">${esc(u.name.slice(0,1))}</div>
+      <div class="user-card-info">
+        <div class="user-card-name">${esc(u.name)}</div>
+        <div class="user-card-meta">${esc(u.company)} · 사번 ${esc(u.empno)}</div>
+      </div>
+      <button class="user-card-del" onclick="removeUser('${esc(u.empno)}','${esc(u.name)}')" title="삭제">✕</button>
+    </div>`).join('');
+}
+
+function openAddUser() {
+  ['uName','uEmpno'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('uCompany').value = '';
+  document.getElementById('addUserModal').classList.add('open');
+}
+
+function saveUser() {
+  const name    = document.getElementById('uName').value.trim();
+  const empno   = document.getElementById('uEmpno').value.trim();
+  const company = document.getElementById('uCompany').value.trim();
+  if (!name || !empno || !company) { showToast('이름, 사번, 회사는 필수입니다', true); return; }
+  if (userDB.find(u => u.empno === empno && u.company === company)) {
+    showToast('이미 등록된 사번입니다', true); return;
+  }
+  userDB.push({ name, empno, company });
+  closeModal('addUserModal');
+  renderUserManage();
+  renderUserCompanyFilter();
+  showToast(`${name}님 추가 완료!`);
+}
+
+function removeUser(empno, name) {
+  if (!confirm(`${name}님을 직책자 명단에서 제거할까요?`)) return;
+  userDB = userDB.filter(u => !(u.empno === empno && u.name === name));
+  renderUserManage();
+  renderUserCompanyFilter();
+  showToast(`${name}님 제거 완료`);
+}
+
+// ══════════ ADMIN TABLE ══════════
+function renderAdminTable() {
+  const q = (document.getElementById('adminSearch').value || '').toLowerCase();
+  const filtered = records.filter(r => {
+    if (!q) return true;
+    return [r.target_company, r.target_position, r.target_job, r.competency,
+            r.agenda, r.keywords, r.registrar_name, r.registrar_company]
+      .join(' ').toLowerCase().includes(q);
+  });
+
+  const tbody = document.getElementById('adminBody');
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="10" class="no-data">데이터 없음</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(r => `
+    <tr>
+      <td style="white-space:nowrap;color:var(--muted)">${fmtDate(r.created_at)}</td>
+      <td style="font-weight:600">${esc(r.target_company||'-')}</td>
+      <td>${esc(r.target_position||'-')}</td>
+      <td style="font-size:12px">${esc(r.target_job||'-')}</td>
+      <td style="font-size:12px;color:var(--muted)">${esc(r.competency||'-')}</td>
+      <td style="font-size:12px;max-width:160px;color:var(--muted)">${esc((r.agenda||'').slice(0,40))}${(r.agenda||'').length>40?'…':''}</td>
+      <td style="font-size:12px;color:var(--orange)">${esc(r.keywords||'-')}</td>
+      <td style="font-weight:600;color:var(--blue)">${esc(r.registrar_name||'-')}</td>
+      <td style="font-size:12px;color:var(--muted)">${esc(r.registrar_company||'-')}</td>
+      <td><button class="btn btn-sm btn-danger" onclick="adminDelete('${r.id}')">삭제</button></td>
+    </tr>`).join('');
+}
+
+async function adminDelete(id) {
+  if (!confirm('관리자 권한으로 삭제합니다. 계속하시겠습니까?')) return;
+  try {
+    await api('DELETE', `${TABLE}?id=eq.${id}`);
+    showToast('삭제 완료');
+    await loadPool();
+    renderAdminDash();
+  } catch(e) { showToast('삭제 실패: ' + e.message, true); }
+}
+
+// ══════════ CSV EXPORT ══════════
+function exportCSV() {
+  const headers = ['등록일','대상자회사','직책','직무','역량','주요아젠다','키워드','등록자','등록자회사'];
+  const rows = records.map(r => [
+    fmtDate(r.created_at), r.target_company||'', r.target_position||'',
+    r.target_job||'', r.competency||'', r.agenda||'',
+    r.keywords||'', r.registrar_name||'', r.registrar_company||''
+  ]);
+  const csv = [headers, ...rows]
+    .map(row => row.map(c => `"${String(c).replace(/"/g,'""')}"`).join(','))
+    .join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
+  a.download = `거현량Pool_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('CSV 다운로드 완료!');
+}
+
+// ══════════ MODAL ══════════
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ══════════ TOAST ══════════
+function showToast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = isErr ? '#c0392b' : 'var(--accent-dark)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ══════════ UTILS ══════════
+function splitTrim(str) { return (str||'').split(',').map(s=>s.trim()).filter(Boolean); }
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(d) {
+  if (!d) return '-';
+  return new Date(d).toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'});
+}
+</script>
+</body>
+</html>
