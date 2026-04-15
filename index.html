@@ -351,7 +351,8 @@ tr:hover td{background:#fafaf8}
     </div>
   </div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchTab('pool',this)">👥 Pool 전체보기</button>
+    <button class="nav-tab active" onclick="switchTab('pool',this)">🗂️ 거현량 진행</button>
+    <button class="nav-tab" onclick="switchTab('gpool',this)">📦 거현량 Pool</button>
     <button class="nav-tab" onclick="switchTab('mine',this)">✏️ 내가 등록한 대상자</button>
     <button class="nav-tab admin-tab" onclick="switchTab('admin',this)">🔐 관리자</button>
   </div>
@@ -392,6 +393,31 @@ tr:hover td{background:#fafaf8}
           <tbody id="mineBody"></tbody>
         </table>
       </div>
+    </div>
+
+    <!-- TAB: GPOOL -->
+    <div class="tab-content" id="tab-gpool">
+      <!-- 관리자 업로드 영역 (관리자만 표시) -->
+      <div id="gpoolUploadArea" style="display:none;background:#fff7ed;border:1.5px dashed #f97316;border-radius:12px;padding:24px;margin-bottom:24px;text-align:center">
+        <div style="font-size:13px;font-weight:700;color:#f97316;margin-bottom:12px">📤 관리자 전용 — 엑셀 업로드</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px">A열: 대상자 회사 · B열: 직책 · C열: 직무 · D열: 전문영역</div>
+        <input type="file" id="gpoolFileInput" accept=".xlsx,.xls" style="display:none" onchange="handleGpoolUpload(this)">
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('gpoolFileInput').click()">📁 엑셀 파일 선택</button>
+        <div id="gpoolUploadStatus" style="margin-top:12px;font-size:12px;color:var(--muted)"></div>
+      </div>
+
+      <!-- 검색 + 필터 -->
+      <div class="toolbar">
+        <input class="search-box" type="text" id="gpoolSearch"
+          placeholder="🔍 회사·직책·직무·전문영역 검색..." oninput="renderGpool()">
+        <select class="filter-sel" id="gpoolFilterCompany" onchange="renderGpool()">
+          <option value="">전체 회사</option>
+        </select>
+        <span id="gpoolCount" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+
+      <!-- Pool 카드 그리드 -->
+      <div class="cards-grid" id="gpoolGrid"></div>
     </div>
 
     <!-- TAB: ADMIN -->
@@ -618,6 +644,7 @@ tr:hover td{background:#fafaf8}
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 // ══════════ CONFIG ══════════
 const SUPA_URL = 'https://sgwpdytsvbnpkdqflhlk.supabase.co';
@@ -1018,10 +1045,10 @@ function switchTab(tab, btn) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   btn.classList.add('active');
-  if (tab === 'mine') renderMine();
+  if (tab === 'mine')  renderMine();
+  if (tab === 'gpool') renderGpool();
   if (tab === 'admin') {
     if (!adminUnlocked) {
-      // 미인증 상태면 반드시 lock 화면 표시, dash 숨김
       document.getElementById('adminLock').style.display = 'block';
       document.getElementById('adminDash').style.display = 'none';
     } else {
@@ -1029,6 +1056,116 @@ function switchTab(tab, btn) {
       document.getElementById('adminDash').style.display = 'block';
       renderAdminDash();
     }
+  }
+}
+
+// ══════════ GPOOL ══════════
+let gpoolData = JSON.parse(localStorage.getItem('ghrl_gpool') || '[]');
+
+function saveGpool() { localStorage.setItem('ghrl_gpool', JSON.stringify(gpoolData)); }
+
+function renderGpool() {
+  // 관리자면 업로드 영역 표시
+  document.getElementById('gpoolUploadArea').style.display = adminUnlocked ? 'block' : 'none';
+
+  const q  = (document.getElementById('gpoolSearch').value || '').toLowerCase();
+  const fc = document.getElementById('gpoolFilterCompany').value;
+  const filtered = gpoolData.filter(r => {
+    const hay = [r.company, r.position, r.job, r.domain].join(' ').toLowerCase();
+    return (!q || hay.includes(q)) && (!fc || r.company === fc);
+  });
+
+  document.getElementById('gpoolCount').textContent = `총 ${filtered.length}건`;
+
+  // 회사 필터 업데이트
+  const companies = [...new Set(gpoolData.map(r => r.company).filter(Boolean))].sort();
+  const sel = document.getElementById('gpoolFilterCompany');
+  const cv = sel.value;
+  sel.innerHTML = '<option value="">전체 회사</option>' +
+    companies.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  sel.value = companies.includes(cv) ? cv : '';
+
+  const grid = document.getElementById('gpoolGrid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
+      <div class="empty-icon">📦</div>
+      <div class="empty-text">${gpoolData.length === 0 ? '관리자가 엑셀을 업로드하면 Pool이 표시됩니다' : '검색 결과가 없습니다'}</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(r => `
+    <div class="card" style="cursor:default">
+      <div class="card-head">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="card-avatar">${esc((r.company||'?').slice(0,1))}</div>
+          <div>
+            <div class="card-company">${esc(r.company || '-')}</div>
+            <div class="card-sub">${esc(r.position || '-')}</div>
+          </div>
+        </div>
+        ${adminUnlocked ? `<button class="user-card-del" onclick="deleteGpoolItem('${r.id}')" title="삭제">✕</button>` : ''}
+      </div>
+      <div class="tags">
+        ${r.job ? `<span class="tag t-job">${esc(r.job)}</span>` : ''}
+        ${r.domain ? `<span class="tag t-default">${esc(r.domain)}</span>` : ''}
+      </div>
+      <div class="card-registrar">📅 ${r.uploadedAt || ''} · ${esc(r.uploadedBy || '')}</div>
+    </div>`).join('');
+}
+
+function deleteGpoolItem(id) {
+  if (!confirm('이 항목을 삭제할까요?')) return;
+  gpoolData = gpoolData.filter(r => r.id !== id);
+  saveGpool();
+  renderGpool();
+  showToast('삭제 완료');
+}
+
+async function handleGpoolUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const status = document.getElementById('gpoolUploadStatus');
+  status.textContent = '⏳ 파일 읽는 중...';
+
+  try {
+    const data = await file.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+    let added = 0;
+    const today = new Date().toLocaleDateString('ko-KR');
+    const uploader = user ? `${user.name} (${user.company})` : '관리자';
+
+    // 헤더 행 건너뛰기 (1행이 헤더인 경우)
+    const startRow = (rows[0] && typeof rows[0][0] === 'string' &&
+      ['회사','대상자','company'].some(k => rows[0][0].toLowerCase().includes(k.toLowerCase()))) ? 1 : 0;
+
+    for (let i = startRow; i < rows.length; i++) {
+      const row = rows[i];
+      const company = String(row[0] || '').trim();
+      if (!company) continue;
+      gpoolData.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2,6) + i,
+        company,
+        position: String(row[1] || '').trim(),
+        job:      String(row[2] || '').trim(),
+        domain:   String(row[3] || '').trim(),
+        uploadedAt: today,
+        uploadedBy: uploader,
+      });
+      added++;
+    }
+
+    saveGpool();
+    renderGpool();
+    status.textContent = `✅ ${added}건 추가 완료!`;
+    input.value = '';
+    showToast(`${added}건 업로드 완료!`);
+  } catch(e) {
+    status.textContent = '❌ 파일 읽기 실패: ' + e.message;
+    showToast('업로드 실패', true);
   }
 }
 
