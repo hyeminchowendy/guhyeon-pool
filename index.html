@@ -508,6 +508,23 @@ tr:hover td{background:#fafaf8}
         ✍️ 등록자: <strong id="addRegistrarLabel"></strong>
       </div>
 
+      <div class="frow">
+        <div class="fg">
+          <label class="fl">만남 차수 <span class="req">*</span></label>
+          <select class="fi" id="fMeetingCount" style="cursor:pointer">
+            <option value="1">1차</option>
+            <option value="2">2차</option>
+            <option value="3">3차</option>
+            <option value="4">4차</option>
+            <option value="5">5차</option>
+            <option value="6">6차 이상</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl">만남 일자 <span class="req">*</span></label>
+          <input class="fi" type="date" id="fMeetingDate">
+        </div>
+      </div>
       <div class="section-title" style="margin-bottom:14px">📋 거현량 정보</div>
       <div class="frow">
         <div class="fg">
@@ -907,6 +924,8 @@ function openAdd() {
   document.getElementById('addSaveBtn').textContent    = '등록';
   ['fTargetCompany','fPosition','fJob','fCompetency','fAgenda','fKeywords']
     .forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('fMeetingCount').value = '1';
+  document.getElementById('fMeetingDate').value = new Date().toISOString().slice(0,10);
   document.getElementById('addModal').classList.add('open');
 }
 function editRecord() {
